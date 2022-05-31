@@ -1,118 +1,177 @@
 #include <iostream>
 #include <string>
-using namespace std;
 
-#define CAD 10
+using namespace std;
 
 struct Funcionario
 {
  	int prontuario;
 	string nome;
 	double salario;
+	struct Funcionario *prox;
 };
 
-struct Lista
-{
-	Funcionario func;
-	Lista* ant;	
-}
-
-Lista* init()
+Funcionario* init()
 {
 	return NULL;
 }
 
-Funcionario* insertFunc(int pront, string nome, double salario)
+Funcionario* insert(Funcionario* lista, int pront)
 {
-	Funcionario* novo = new Funcionario();
+	Funcionario* novo = new Funcionario;
 	novo->prontuario = pront;
-	novo->nome = nome;
-	novo->salario = salario;
+	novo->prox = lista;
 	return novo;
 }
 
-Lista* insertList(Lista* lista, Funcionario* func)
+Funcionario* remove(Funcionario* lista, int pront)
 {
-	Lista* novo = new Lista();
-	novo->func = func;
-	novo->ant = lista;
-	return novo;
-}
+	Funcionario *aux = lista;	
+	Funcionario *anterior = NULL;
 
-void print(Lista* lista)
-{
-	Lista* aux;
-	aux = lista;
-	while (aux != NULL)
-	{
-        cout << "Prontuario: " << aux->func->prontuario << endl;
-        cout << "Nome: " << aux->func->nome << endl;
-        cout << "Salario: " << aux->func->salario << endl;
-		aux = aux->ant;
-	}
-	cout << "----------" << endl;
-}
-
-Lista* find(Lista* lista, int pront)
-{
-	Lista* aux;
-	aux = lista;
-	while (aux != NULL && aux->func->prontuario != pront)
-	{
-		aux = aux->ant;
-	}
-	return aux;
-}
-
-Lista* remove(Lista* lista, int pront)
-{
-	Lista *aux;
-	
-	Lista *anterior = NULL;
-
-	aux = lista;
-	while (aux != NULL && aux->func->prontuario != pront)
+	while (aux != NULL && aux->prontuario != pront)
 	{
 		anterior = aux;
-		aux = aux->ant;
+		aux = aux->prox;
 	}
 	
 	if (aux == NULL)
 	{
 		return lista;
 	}
-	
+
 	if (anterior == NULL)
 	{
-		lista = aux->ant; 
+		lista = aux->prox; 
 	}
 	else
 	{
-   	    anterior->ant = aux->ant;
+   	    anterior->prox = aux->prox;
 	}
+
 	free(aux);
 	return lista;
 }
 
+void print(Funcionario* lista)
+{
+	Funcionario* aux = lista;
+	double sal = 0;
+
+	while (aux != NULL)
+	{
+        cout << "Prontuario: " << aux->prontuario << endl;
+        cout << "Nome: " << aux->nome << endl;
+        cout << "Salario: " << aux->salario << endl;
+		cout << "--------------------------------" << endl;
+
+		sal += aux->salario;
+		aux = aux->prox;
+	}
+	cout << "Total dos salarios: R$" << sal << endl;
+	cout << "--------------------------------" << endl;
+}
+
+Funcionario* find(Funcionario* lista, int pront)
+{
+	Funcionario* aux = lista;
+
+	while (aux != NULL && aux->prontuario != pront)
+	{
+		aux = aux->prox;
+	}
+
+	return aux;
+}
 
 int main(int argc, char** argv)
 {
-	Lista* minhaLista;
-	int op;
+	Funcionario* cadastro;
+	int op, pront = 0, aux;
+	string nome;
+	double sal;
+
+
+	cadastro = init();
 	
 	do{
+		cout << "Escolha uma opcao:" << endl;
+		cout << "--------------------------------" << endl;
+		cout << "0 - Sair" << endl;
+		cout << "1 - Incluir funcionario" << endl;
+		cout << "2 - Excluir funcionario" << endl;
+		cout << "3 - Pesquisar funcionario" << endl;
+		cout << "4 - Listar funcionarios" << endl;
+		cout << "--------------------------------" << endl;
+		cin >> op;
+
 		switch(op)
 		{
 		case 0:
 			op = 0;
-			break;
+			cout << "Saida com exito" << endl;
+			cout << "--------------------------------" << endl;
+			break;	
+
 		case 1:
-			inser = 0;
+			pront++;
+			cadastro = insert(cadastro, pront);
+
+			cout << "Incluir funcionario" << endl;
+			cout << "Numero do prontuario: " << pront << endl;
+			cout << "--------------------------------" << endl;
+			cout << "Digite o nome do funcionario: ";
+			cin >> cadastro->nome;
+			cout << "--------------------------------" << endl;
+			cout << "Digite o salario: R$";
+			cin >> cadastro->salario;
+			cout << "--------------------------------" << endl;
+			cout << "Funcionario cadastrado com exito" << endl;
+			cout << "--------------------------------" << endl;
 			break;
+
+		case 2:
+			cout << "Excluir funcionario" << endl;
+			cout << "Digite o numero do prontuario: " << endl;
+			cin >> aux;
+			cout << "--------------------------------" << endl;
+
+			cadastro = remove(cadastro, aux);
+
+			cout << "Funcionario excluido com exito" << endl;
+			cout << "--------------------------------" << endl;
+			break;
+
+		case 3:
+			cout << "Pesquisar um funcionario" << endl;
+			cout << "Digite o numero de prontuario para pesquisar: ";
+			cin >> aux;
+			cout << "--------------------------------" << endl;
+
+			Funcionario *procurado;
+			procurado = find(cadastro, aux);
+
+			cout << "Prontuario: " << procurado->prontuario << endl;
+        	cout << "Nome: " << procurado->nome << endl;
+        	cout << "Salario: " << procurado->salario << endl;
+			cout << "--------------------------------" << endl;
+			break;
+
+		case 4:
+			cout << "Lista dos funcionarios" << endl;
+			cout << "--------------------------------" << endl;
+			print(cadastro);
+			break;
+
 		default:
+			cout << "Valor invalido" << endl;
+			cout << "--------------------------------" << endl;
 			break;
+
 		}
 	}while(op != 0);
 	
+	free(cadastro);
+
     return 0;
 }
